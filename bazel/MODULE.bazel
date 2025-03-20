@@ -1,0 +1,45 @@
+# *******************************************************************************
+# Copyright (c) 2025 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+
+module(
+    name = "score_toolchains_gcc",
+    version = "0.1",
+    compatibility_level = 0,
+)
+
+#############################################################
+#
+# Common useful functions and rules for Bazel
+#
+#############################################################
+bazel_dep(name = "bazel_skylib", version = "1.7.1")
+
+#############################################################
+#
+# Constraint values for specifying platforms and toolchains
+#
+#############################################################
+bazel_dep(name = "platforms", version = "0.0.10")
+
+#############################################################
+#
+# C++ Rules for Bazel
+#
+#############################################################
+bazel_dep(name = "rules_cc", version = "0.0.9")
+
+#############################################################
+#
+# Bazel repository rule for fetching archives
+#
+#############################################################

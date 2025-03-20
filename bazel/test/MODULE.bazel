@@ -1,0 +1,35 @@
+# *******************************************************************************
+# Copyright (c) 2025 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+module(
+    name = "score_toolchains_gcc_tests",
+    version = "0.0.1",
+    compatibility_level = 0,
+)
+
+bazel_dep(name = "score_toolchains_gcc", version = "0.0.1")
+local_path_override(
+    module_name = "score_toolchains_gcc",
+    path = "../",
+)
+
+gcc = use_extension("@score_toolchains_gcc//:extentions.bzl", "gcc")
+gcc.toolchain(
+    url = "https://github.com/eclipse-score/toolchains_gcc/releases/download/0.0.1/x86_64-unknown-linux-gnu_gcc12.tar.gz",
+    sha256 = "457f5f20f57528033cb840d708b507050d711ae93e009388847e113b11bf3600",
+    strip_prefix = "x86_64-unknown-linux-gnu",
+)
+gcc.extra_features(
+    features = ["@score_toolchains_gcc_tests//:custom_features"],
+)
+use_repo(gcc, "gcc_toolchain", "gcc_toolchain_gcc")
+register_toolchains("@gcc_toolchain//:host_gcc_12")
