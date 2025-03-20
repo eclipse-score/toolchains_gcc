@@ -1,0 +1,58 @@
+# *******************************************************************************
+# Copyright (c) 2025 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+# *******************************************************************************
+
+module(
+    name = "toolchain_gcc",
+    version = "0.1",
+    compatibility_level = 0,
+)
+
+#############################################################
+#
+# Common useful functions and rules for Bazel
+#
+#############################################################
+bazel_dep(name = "bazel_skylib", version = "1.7.1")
+
+#############################################################
+#
+# Constraint values for specifying platforms and toolchains
+#
+#############################################################
+bazel_dep(name = "platforms", version = "0.0.10")
+
+#############################################################
+#
+# C++ Rules for Bazel
+#
+#############################################################
+bazel_dep(name = "rules_cc", version = "0.0.9")
+
+#############################################################
+#
+# Bazel repository rule for fetching archives
+#
+#############################################################
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+#############################################################
+#
+# GNU GCC 12.2.0 package
+#
+#############################################################
+http_archive(
+    name = "host_gcc_12",
+    build_file = "//third_party/host/gcc_12_2:bazel.BUILD",
+    # sha256 = , # Needs to be set once the TC package is released.
+    # urls = [],
+)
