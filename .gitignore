@@ -3,3 +3,5 @@
 /tc_generator/build.log
 /tc_generator/output
 
+# Bazel
+MODULE.bazel.lock
