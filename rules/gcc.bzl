@@ -37,12 +37,23 @@ def _impl(rctx):
         rctx (repository_ctx): The Bazel repository context, providing access to attributes
             and methods for creating repository rules.
     """
+    # Map architecture names to platform CPU values
+    arch_map = {
+        "x86_64": "x86_64",
+        "aarch64": "aarch64",
+    }
+    
+    # Determine target system name based on architecture
+    target_system = "%s-linux" % rctx.attr.target_arch
+    
     rctx.template(
         "BUILD",
         rctx.attr._cc_tolchain_build,
         {
             "%{gcc_repo}": rctx.attr.gcc_repo,
             "%{tc_name}": "host_gcc_12",
+            "%{exec_cpu}": arch_map.get(rctx.attr.exec_arch, "x86_64"),
+            "%{target_cpu}": arch_map.get(rctx.attr.target_arch, "x86_64"),
         },
     )
     minimal_warnings = "[]"
@@ -73,6 +84,8 @@ def _impl(rctx):
             "%{treat_warnings_as_errors_switch}": "True" if "treat_warnings_as_errors" in rctx.attr.extra_features else "False",
             "%{third_party_warnings_flags}": third_party_warnings,
             "%{third_party_warnings_switch}": "True" if "third_party_warnings" in rctx.attr.extra_features else "False",
+            "%{target_cpu}": rctx.attr.target_arch,
+            "%{target_system}": target_system,
         },
     )
 
@@ -82,6 +95,8 @@ gcc_toolchain = repository_rule(
         "gcc_repo": attr.string(doc="The URL of the GCC binary package."),
         "extra_features": attr.string_list(doc="A list of extra features to enable in the toolchain."),
         "warning_flags": attr.string_list_dict(doc="A dictionary mapping warning categories to lists of warning flags."),
+        "target_arch": attr.string(default="x86_64", doc="Target architecture (x86_64 or aarch64)."),
+        "exec_arch": attr.string(default="x86_64", doc="Execution architecture (x86_64 or aarch64)."),
         "_cc_toolchain_config_bzl": attr.label(
             default = "@score_toolchains_gcc//toolchain/internal:cc_toolchain_config.bzl",
             doc = "Path to the cc_toolchain_config.bzl template file.",

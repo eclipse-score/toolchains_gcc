@@ -149,20 +149,23 @@ def _impl(ctx):
         ],
     )
 
+    # Architecture-specific compile flags
+    arch_flag_sets = []
+    if "%{target_cpu}" == "x86_64":
+        arch_flag_sets.append(flag_set(
+            actions = all_compile_actions,
+            flag_groups = [
+                flag_group(
+                    flags = ["-m64"],
+                ),
+            ],
+        ))
+    # For aarch64, no specific architecture flag is needed
+    
     default_compile_flags_feature = feature(
         name = "default_compile_flags",
         enabled = True,
-        flag_sets = [
-            flag_set(
-                actions = all_compile_actions,
-                flag_groups = [
-                    flag_group(
-                        flags = [
-                            "-m64",
-                        ],
-                    ),
-                ],
-            ),
+        flag_sets = arch_flag_sets + [
             flag_set(
                 actions = all_cpp_compile_actions,
                 flag_groups = [
@@ -383,8 +386,8 @@ def _impl(ctx):
         features =  features,
         action_configs = action_configs,
         host_system_name = "local",
-        target_system_name = "x86_64-linux",
-        target_cpu = "x86_64",
+        target_system_name = "%{target_system}",
+        target_cpu = "%{target_cpu}",
         target_libc = "unknown",
         toolchain_identifier = toolchain_full_name,
         tool_paths = tool_paths,

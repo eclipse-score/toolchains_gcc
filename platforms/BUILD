@@ -19,3 +19,12 @@ platform(
     ],
     visibility = ["//visibility:public"],
 )
+
+platform(
+    name = "aarch64-linux",
+    constraint_values = [
+        "@platforms//cpu:aarch64",
+        "@platforms//os:linux",
+    ],
+    visibility = ["//visibility:public"],
+)

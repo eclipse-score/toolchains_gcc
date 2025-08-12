@@ -48,11 +48,11 @@ cc_toolchain(
 toolchain(
     name = "%{tc_name}",
     exec_compatible_with = [
-        "@platforms//cpu:x86_64",
+        "@platforms//cpu:%{exec_cpu}",
         "@platforms//os:linux",
     ],
     target_compatible_with = [
-        "@platforms//cpu:x86_64",
+        "@platforms//cpu:%{target_cpu}",
         "@platforms//os:linux",
     ],
     toolchain = ":cc_toolchain",
