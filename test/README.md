@@ -6,6 +6,13 @@
 bazel build //:main_cpp
 ```
 
+### Building code arm64 gcc toolchain
+```bash
+bazel build --config=arm64 //:main_cpp
+#or 
+bazel build --config=aarch64 //:main_cpp
+```
+
 ### Building code with host gcc toolchain and enabled pthread
 
 ```bash
