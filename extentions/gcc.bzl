@@ -53,20 +53,19 @@ def _gcc_impl(mctx):
 
     # If no toolchains specified, use defaults
     if not toolchains:
-        # Default toolchains from skarlsson/toolchains_gcc_packages
         toolchains = [
             {
                 "name": "gcc_toolchain_x86_64",
-                "url": "https://github.com/skarlsson/toolchains_gcc_packages/releases/download/v0.0.2-pr3/x86_64-unknown-linux-gnu_gcc12.tar.gz",
-                "sha256": "ede0289c89a633f6f0b7fa5079a1fbc912e9a8607d01a792e3d78f4939d4e96a",
+                "url": "https://github.com/eclipse-score/toolchains_gcc_packages/releases/download/v0.0.3/x86_64-unknown-linux-gnu_gcc12.tar.gz",
+                "sha256": "8fa85c2a93a6bef1cf866fa658495a2416dfeec692e4246063b791abf18da083",
                 "strip_prefix": "x86_64-unknown-linux-gnu",
                 "target_arch": "x86_64",
                 "exec_arch": "x86_64",
             },
             {
                 "name": "gcc_toolchain_aarch64",
-                "url": "https://github.com/skarlsson/toolchains_gcc_packages/releases/download/v0.0.2-pr3/aarch64-unknown-linux-gnu_gcc12.tar.gz",
-                "sha256": "cd9fcac29bea3dd7e52724166491a10e152f58188c9f25568e6f50b6c38f6dc3",
+                "url": "https://github.com/eclipse-score/toolchains_gcc_packages/releases/download/v0.0.3/aarch64-unknown-linux-gnu_gcc12.tar.gz",
+                "sha256": "57153340625581b199408391b895c84651382d3edd4c60fadbf0399f9dad21e1",
                 "strip_prefix": "aarch64-unknown-linux-gnu",
                 "target_arch": "aarch64",
                 "exec_arch": "x86_64",
