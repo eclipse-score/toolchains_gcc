@@ -1,11 +1,9 @@
-# ARM64 Support for SCORE Toolchains GCC
-
-## Using ARM64 Toolchain
+## Using aarch64/arm64 toolchain
 
 ### In your MODULE.bazel:
 
 ```python
-bazel_dep(name = "score_toolchains_gcc", version = "0.5")
+bazel_dep(name = "score_toolchains_gcc", version = "0.0.7")
 
 gcc = use_extension("@score_toolchains_gcc//extentions:gcc.bzl", "gcc")
 # Default toolchains for x86_64 and aarch64 are automatically configured
@@ -17,7 +15,7 @@ register_toolchains(
 )
 ```
 
-### Building for ARM64:
+### Building for arm64:
 
 Add to your project's `.bazelrc`:
 ```
@@ -37,21 +35,6 @@ bazel build --config=aarch64 //your:target
 bazel build --platforms=@score_toolchains_gcc//platforms:aarch64-linux //your:target
 ```
 
-## Cross-compilation vs Native Compilation
-
-- **Cross-compilation** (x86_64 host → ARM64 target):
-  ```python
-  target_arch = "aarch64",
-  exec_arch = "x86_64",
-  ```
-
-- **Native compilation** (ARM64 host → ARM64 target):
-  ```python
-  target_arch = "aarch64",
-  exec_arch = "aarch64",
-  ```
-
-
 ## Example
 
-See the `test/` directory for a complete working example that supports both x86_64 and ARM64 builds.
+See the `test/` directory for a complete working example that supports both x86_64 and aarch64 builds.
