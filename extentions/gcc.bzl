@@ -34,6 +34,7 @@ def _gcc_impl(mctx):
                 "sha256": tag.sha256,
                 "target_arch": tag.target_arch,
                 "exec_arch": tag.exec_arch,
+                "build_file": tag.build_file,
             })
 
         for tag in mod.tags.extra_features:
@@ -61,6 +62,7 @@ def _gcc_impl(mctx):
                 "strip_prefix": "x86_64-unknown-linux-gnu",
                 "target_arch": "x86_64",
                 "exec_arch": "x86_64",
+                "build_file": None,
             },
             {
                 "name": "gcc_toolchain_aarch64",
@@ -69,6 +71,7 @@ def _gcc_impl(mctx):
                 "strip_prefix": "aarch64-unknown-linux-gnu",
                 "target_arch": "aarch64",
                 "exec_arch": "x86_64",
+                "build_file": None,
             },
         ]
 
@@ -79,10 +82,21 @@ def _gcc_impl(mctx):
         # Determine target triple based on architecture
         target_triple = "%s-unknown-linux-gnu" % target_arch
         
-        http_archive(
-            name = "%s_gcc" % name,
-            urls = [toolchain_info["url"]],
-            build_file_content = """
+        if toolchain_info.get("build_file"):
+            # Use custom build_file if provided
+            http_archive(
+                name = "%s_gcc" % name,
+                urls = [toolchain_info["url"]],
+                build_file = toolchain_info["build_file"],
+                sha256 = toolchain_info["sha256"],
+                strip_prefix = toolchain_info["strip_prefix"],
+            )
+        else:
+            # Use default BUILD file content
+            http_archive(
+                name = "%s_gcc" % name,
+                urls = [toolchain_info["url"]],
+                build_file_content = """
 # Generated BUILD file for gcc toolchain
 package(default_visibility = ["//visibility:public"])
 
@@ -126,9 +140,9 @@ filegroup(
     srcs = ["{triple}/sysroot"],
 )
 """.format(triple = target_triple),
-            sha256 = toolchain_info["sha256"],
-            strip_prefix = toolchain_info["strip_prefix"],
-        )
+                sha256 = toolchain_info["sha256"],
+                strip_prefix = toolchain_info["strip_prefix"],
+            )
 
         gcc_toolchain(
             name = name,
@@ -150,6 +164,7 @@ gcc = module_extension(
                 "sha256": attr.string(doc = "Checksum of the package"),
                 "target_arch": attr.string(doc = "Target architecture (x86_64 or aarch64)", default="x86_64"),
                 "exec_arch": attr.string(doc = "Execution architecture (x86_64 or aarch64)", default="x86_64"),
+                "build_file": attr.label(doc = "Label of custom BUILD file for the toolchain. If not provided, uses default generated content.", mandatory=False),
             },
         ),
         "warning_flags": tag_class(

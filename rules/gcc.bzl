@@ -37,12 +37,6 @@ def _impl(rctx):
         rctx (repository_ctx): The Bazel repository context, providing access to attributes
             and methods for creating repository rules.
     """
-    # Map architecture names to platform CPU values
-    arch_map = {
-        "x86_64": "x86_64",
-        "aarch64": "aarch64",
-    }
-    
     # Determine target system name based on architecture
     target_system = "%s-linux" % rctx.attr.target_arch
     
@@ -52,8 +46,8 @@ def _impl(rctx):
         {
             "%{gcc_repo}": rctx.attr.gcc_repo,
             "%{tc_name}": "host_gcc_12",
-            "%{exec_cpu}": arch_map.get(rctx.attr.exec_arch, "x86_64"),
-            "%{target_cpu}": arch_map.get(rctx.attr.target_arch, "x86_64"),
+            "%{exec_cpu}": rctx.attr.exec_arch,
+            "%{target_cpu}": rctx.attr.target_arch,
         },
     )
     minimal_warnings = "[]"
