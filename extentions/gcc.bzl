@@ -21,48 +21,137 @@ def _gcc_impl(mctx):
         if not mod.is_root:
             fail("Only the root module can use the 'gcc' extension")
 
-    toolchain_info = None
-    features = []
-    warning_flags = None
+    toolchains = []
+    features_by_name = {}
+    warning_flags_by_name = {}
 
     for mod in mctx.modules:
         for tag in mod.tags.toolchain:
-            toolchain_info = {
+            toolchains.append({
                 "name": tag.name,
                 "url": tag.url,
                 "strip_prefix": tag.strip_prefix,
                 "sha256": tag.sha256,
-            }
+                "target_arch": tag.target_arch,
+                "exec_arch": tag.exec_arch,
+                "build_file": tag.build_file,
+            })
 
         for tag in mod.tags.extra_features:
+            name = tag.name
+            if name not in features_by_name:
+                features_by_name[name] = []
             for feature in tag.features:
-                features.append(feature)
+                features_by_name[name].append(feature)
 
         for tag in mod.tags.warning_flags:
-            warning_flags = {
-                "minimal_warnings":tag.minimal_warnings,
-                "strict_warnings":tag.strict_warnings,
-                "treat_warnings_as_errors":tag.treat_warnings_as_errors
+            name = tag.name
+            warning_flags_by_name[name] = {
+                "minimal_warnings": tag.minimal_warnings,
+                "strict_warnings": tag.strict_warnings,
+                "treat_warnings_as_errors": tag.treat_warnings_as_errors
             }
 
-    if toolchain_info:
-        http_archive(
-            name = "%s_gcc" % toolchain_info["name"],
-            urls = [toolchain_info["url"]],
-            build_file = "@score_toolchains_gcc//toolchain/third_party:gcc.BUILD",
-            sha256 = toolchain_info["sha256"],
-            strip_prefix = toolchain_info["strip_prefix"],
-        )
+    # If no toolchains specified, use defaults
+    if not toolchains:
+        toolchains = [
+            {
+                "name": "gcc_toolchain_x86_64",
+                "url": "https://github.com/eclipse-score/toolchains_gcc_packages/releases/download/v0.0.3/x86_64-unknown-linux-gnu_gcc12.tar.gz",
+                "sha256": "8fa85c2a93a6bef1cf866fa658495a2416dfeec692e4246063b791abf18da083",
+                "strip_prefix": "x86_64-unknown-linux-gnu",
+                "target_arch": "x86_64",
+                "exec_arch": "x86_64",
+                "build_file": None,
+            },
+            {
+                "name": "gcc_toolchain_aarch64",
+                "url": "https://github.com/eclipse-score/toolchains_gcc_packages/releases/download/v0.0.3/aarch64-unknown-linux-gnu_gcc12.tar.gz",
+                "sha256": "57153340625581b199408391b895c84651382d3edd4c60fadbf0399f9dad21e1",
+                "strip_prefix": "aarch64-unknown-linux-gnu",
+                "target_arch": "aarch64",
+                "exec_arch": "x86_64",
+                "build_file": None,
+            },
+        ]
+
+    for toolchain_info in toolchains:
+        name = toolchain_info["name"]
+        target_arch = toolchain_info["target_arch"]
+        
+        # Determine target triple based on architecture
+        target_triple = "%s-unknown-linux-gnu" % target_arch
+        
+        if toolchain_info.get("build_file"):
+            # Use custom build_file if provided
+            http_archive(
+                name = "%s_gcc" % name,
+                urls = [toolchain_info["url"]],
+                build_file = toolchain_info["build_file"],
+                sha256 = toolchain_info["sha256"],
+                strip_prefix = toolchain_info["strip_prefix"],
+            )
+        else:
+            # Use default BUILD file content
+            http_archive(
+                name = "%s_gcc" % name,
+                urls = [toolchain_info["url"]],
+                build_file_content = """
+# Generated BUILD file for gcc toolchain
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "all_files",
+    srcs = glob(["*/**/*"]),
+)
+
+filegroup(
+    name = "bin",
+    srcs = ["bin"],
+)
+
+filegroup(
+    name = "ar",
+    srcs = ["bin/{triple}-ar"],
+)
+
+filegroup(
+    name = "gcc",
+    srcs = ["bin/{triple}-gcc"],
+)
+
+filegroup(
+    name = "gcov",
+    srcs = ["bin/{triple}-gcov"],
+)
+
+filegroup(
+    name = "gpp",
+    srcs = ["bin/{triple}-g++"],
+)
+
+filegroup(
+    name = "strip",
+    srcs = ["bin/{triple}-strip"],
+)
+
+filegroup(
+    name = "sysroot_dir",
+    srcs = ["{triple}/sysroot"],
+)
+""".format(triple = target_triple),
+                sha256 = toolchain_info["sha256"],
+                strip_prefix = toolchain_info["strip_prefix"],
+            )
 
         gcc_toolchain(
-            name = toolchain_info["name"],
-            gcc_repo = "%s_gcc" % toolchain_info["name"],
-            extra_features = features,
-            warning_flags = warning_flags,
+            name = name,
+            gcc_repo = "%s_gcc" % name,
+            extra_features = features_by_name.get(name, []),
+            warning_flags = warning_flags_by_name.get(name, None),
+            target_arch = toolchain_info["target_arch"],
+            exec_arch = toolchain_info["exec_arch"],
         )
-
-    else:
-        fail("Cannot create gcc toolchain repository, some info is missing!")
 
 gcc = module_extension(
     implementation = _gcc_impl,
@@ -73,6 +162,9 @@ gcc = module_extension(
                 "url": attr.string(doc = "Url to the toolchain package."),
                 "strip_prefix": attr.string(doc = "Strip prefix from toolchain package.", default=""),
                 "sha256": attr.string(doc = "Checksum of the package"),
+                "target_arch": attr.string(doc = "Target architecture (x86_64 or aarch64)", default="x86_64"),
+                "exec_arch": attr.string(doc = "Execution architecture (x86_64 or aarch64)", default="x86_64"),
+                "build_file": attr.label(doc = "Label of custom BUILD file for the toolchain. If not provided, uses default generated content.", mandatory=False),
             },
         ),
         "warning_flags": tag_class(

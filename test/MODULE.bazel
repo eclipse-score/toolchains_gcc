@@ -24,21 +24,46 @@ local_path_override(
 )
 
 gcc = use_extension("@score_toolchains_gcc//extentions:gcc.bzl", "gcc")
-gcc.toolchain(
-    url = "https://github.com/eclipse-score/toolchains_gcc_packages/releases/download/0.0.1/x86_64-unknown-linux-gnu_gcc12.tar.gz",
-    sha256 = "457f5f20f57528033cb840d708b507050d711ae93e009388847e113b11bf3600",
-    strip_prefix = "x86_64-unknown-linux-gnu",
+
+# Use default toolchains - no configuration needed!
+# The defaults already include x86_64 and aarch64 toolchains
+
+# Add warning flags for both toolchains
+gcc.warning_flags(
+    name = "gcc_toolchain_x86_64",
+    minimal_warnings = ["-Wall", "-Wno-error=deprecated-declarations"],
+    strict_warnings = ["-Wextra", "-Wpedantic"],
+    treat_warnings_as_errors = ["-Werror"],
 )
+
+gcc.warning_flags(
+    name = "gcc_toolchain_aarch64",
+    minimal_warnings = ["-Wall", "-Wno-error=deprecated-declarations"],
+    strict_warnings = ["-Wextra", "-Wpedantic"],
+    treat_warnings_as_errors = ["-Werror"],
+)
+
+# Enable extra features for both toolchains
 gcc.extra_features(
+    name = "gcc_toolchain_x86_64",
     features = [
         "minimal_warnings",
         "treat_warnings_as_errors",
     ],
 )
-gcc.warning_flags(
-    minimal_warnings = ["-Wall", "-Wno-error=deprecated-declarations"],
-    strict_warnings = ["-Wextra", "-Wpedantic"],
-    treat_warnings_as_errors = ["-Werror"],
+
+gcc.extra_features(
+    name = "gcc_toolchain_aarch64",
+    features = [
+        "minimal_warnings",
+        "treat_warnings_as_errors",
+    ],
 )
-use_repo(gcc, "gcc_toolchain", "gcc_toolchain_gcc")
-register_toolchains("@gcc_toolchain//:host_gcc_12")
+
+use_repo(gcc, "gcc_toolchain_x86_64", "gcc_toolchain_aarch64")
+
+# Register both toolchains
+register_toolchains(
+    "@gcc_toolchain_x86_64//:host_gcc_12",
+    "@gcc_toolchain_aarch64//:host_gcc_12",
+)

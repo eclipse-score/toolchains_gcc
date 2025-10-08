@@ -19,4 +19,5 @@ cc_binary(
 cc_binary(
     name = "main_pthread_cpp",
     srcs = ["main_pthread.cpp"],
+    features = ["use_pthread"],
 )

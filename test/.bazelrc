@@ -17,3 +17,12 @@ common --registry=https://bcr.bazel.build
 build:x86_64-linux --incompatible_strict_action_env
 build:x86_64-linux --platforms=@score_toolchains_gcc//platforms:x86_64-linux
 build:x86_64-linux --sandbox_writable_path=/var/tmp
+
+# ARM64/AArch64 configurations
+build:arm64 --incompatible_strict_action_env
+build:arm64 --platforms=@score_toolchains_gcc//platforms:aarch64-linux
+build:arm64 --sandbox_writable_path=/var/tmp
+
+build:aarch64 --incompatible_strict_action_env
+build:aarch64 --platforms=@score_toolchains_gcc//platforms:aarch64-linux
+build:aarch64 --sandbox_writable_path=/var/tmp
