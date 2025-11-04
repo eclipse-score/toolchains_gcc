@@ -21,9 +21,76 @@ def _gcc_impl(mctx):
         if not mod.is_root:
             fail("Only the root module can use the 'gcc' extension")
 
+    DEFAULT_FEATURES = [
+        "minimal_warnings",
+        "strict_warnings",
+        "treat_warnings_as_errors",
+    ]
+
+
+    DEFAULT_WARNING_FLAGS = {
+        "minimal_warnings": [
+            "-Wall",
+            "-Wextra",
+            "-Wundef",
+            "-Wwrite-strings",
+            "-Wpointer-arith",
+            "-Wcast-align",
+            "-Wshadow",
+            "-Wswitch-bool",
+            "-Wredundant-decls",
+            "-Wswitch-enum",
+            "-Wtype-limits",
+            "-Wformat",
+            "-Wformat-security",
+            "-Wconversion",
+            "-Wlogical-op",
+            "-Wreturn-local-addr",
+            "-Wunused-but-set-variable",
+            "-Wunused-parameter",
+            "-Wunused-but-set-parameter",
+            "-Wunused-variable",
+            "-Wunused",
+            "-Wparentheses",
+            "-Wuninitialized",
+            "-Wsequence-point",
+            "-Wsign-compare",
+            "-Wignored-qualifiers",
+            "-Wcast-qual",
+            "-Wreturn-type",
+            "-Wcomment"
+        ],
+        "strict_warnings": [
+            "-Wpedantic",
+            "-Wbad-function-cast",
+            "-Wstrict-prototypes",
+            "-Wodr",
+            "-Wlogical-not-parentheses",
+            "-Wsizeof-array-argument",
+            "-Wbool-compare",
+            "-Winvalid-pch",
+            "-Wformat=2",
+            "-Wmissing-format-attribute",
+            "-Wformat-nonliteral",
+            "-Wformat-signedness",
+            "-Wvla",
+            "-Wuseless-cast",
+            "-Wdouble-promotion",
+            "-Wmissing-prototypes",
+            "-Wreorder",
+            "-Wnarrowing"
+        ],
+        "treat_warnings_as_errors": []
+    }
+
+
     toolchain_info = None
-    features = []
-    warning_flags = None
+    features = list(DEFAULT_FEATURES)
+    warning_flags = {
+        "minimal_warnings": list(DEFAULT_WARNING_FLAGS["minimal_warnings"]),
+        "strict_warnings": list(DEFAULT_WARNING_FLAGS["strict_warnings"]),
+        "treat_warnings_as_errors": list(DEFAULT_WARNING_FLAGS["treat_warnings_as_errors"]),
+    }
 
     for mod in mctx.modules:
         for tag in mod.tags.toolchain:
@@ -34,16 +101,23 @@ def _gcc_impl(mctx):
                 "sha256": tag.sha256,
             }
 
-        for tag in mod.tags.extra_features:
-            for feature in tag.features:
-                features.append(feature)
+            for tag in mod.tags.extra_features:
+                for feature in tag.features:
+                    if feature not in features:
+                        features.append(feature)
 
         for tag in mod.tags.warning_flags:
-            warning_flags = {
-                "minimal_warnings":tag.minimal_warnings,
-                "strict_warnings":tag.strict_warnings,
-                "treat_warnings_as_errors":tag.treat_warnings_as_errors
-            }
+            for flag in tag.minimal_warnings:
+                if flag not in warning_flags["minimal_warnings"]:
+                    warning_flags["minimal_warnings"].append(flag)
+
+            for flag in tag.strict_warnings:
+                if flag not in warning_flags["strict_warnings"]:
+                    warning_flags["strict_warnings"].append(flag)
+
+            for flag in tag.treat_warnings_as_errors:
+                if flag not in warning_flags["treat_warnings_as_errors"]:
+                    warning_flags["treat_warnings_as_errors"].append(flag)
 
     if toolchain_info:
         http_archive(
