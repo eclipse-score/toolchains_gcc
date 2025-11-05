@@ -31,8 +31,8 @@ gcc_toolchain(
         "treat_warnings_as_errors",
     ],
     warning_flags = {
-        "minimal_warnings": ["-Wall", "-Wno-error=deprecated-declarations"],
-        "strict_warnings": ["-Wextra", "-Wpedantic"],
+        "minimal_warnings": ["-Wno-error=deprecated-declarations"],
+        "strict_warnings": ["-Wno-bool-compare"],
         "treat_warnings_as_errors": ["-Werror"],
     },
 )

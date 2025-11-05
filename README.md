@@ -28,13 +28,16 @@ toolchain_gcc_dependencies()
 ## Configuring the toolchain to a project needs
 The `score_toolchains_gcc` module currently supports only GNU GCC version **12.2.0**. Support for multiple GCC versions is planned, with future versions expected to be selectable via an extended toolchain interface. As of now, version 12.2.0 is the sole supported target.
 
-The module exposes an API that allows consumers to enable or disable specific toolchain behaviors related to compilation diagnostics. The following features can be individually configured:
+The module exposes an API that allows consumers to enable or disable specific toolchain behaviors related to compilation diagnostics.
+By default, the toolchain activates the following features using predefined compiler flags:
 
-1. Minimal warning flags — enables a basic set of compiler warnings
-2. Strict warning flags — enables a more aggressive set of warnings (e.g., `-Wall, -Wextra`)
+1. Minimal warning flags — enables a basic set of compiler warnings (e.g., `-Wall, -Wextra`)
+2. Strict warning flags — enables a more aggressive set of warnings (e.g., `-Wpedantic`)
 3. A `treat warnings as errors` flags — promotes all warnings to errors (e.g., `-Werror`)
 
-These features provide fine-grained control over the compiler's warning policy. If no features are explicitly selected, the toolchain will apply no additional warning-related flags by default.
+Consumers can disable any of these features by prefixing the feature name with a dash (e.g., `-minimal_warnings`). When a feature is disabled this way, neither the default nor any user-defined flags associated with it will be applied.
+Additionally, consumers can adjust the compiler's warning behavior by adding custom flags or disabling specific warnings using the `-Wno-` prefix.
+These features provide fine-grained control over the compiler's warning policy.
 
 To set wanted flags, the following API needs to be used:
 ```python
@@ -42,18 +45,18 @@ gcc = use_extension("@score_toolchains_gcc//extentions:gcc.bzl", "gcc")
 gcc.extra_features(
     features = [
         "minimal_warnings",
-        "treat_warnings_as_errors",
+        "-treat_warnings_as_errors",
     ],
 )
 gcc.warning_flags(
-    minimal_warnings = ["-Wall", "-Wno-error=deprecated-declarations"],
-    strict_warnings = ["-Wextra", "-Wpedantic"],
+    minimal_warnings = ["-Wno-error=deprecated-declarations"],
+    strict_warnings = ["-Wno-bool-compare"],
     treat_warnings_as_errors = ["-Werror"],
 )
 use_repo(gcc, "gcc_toolchain", "gcc_toolchain_gcc")
 ```
-* `extra_features` - This will enable all features which are set in the list.
-* `warning_flags` - This will set flags for selected features.
+* `extra_features` - Enables or disables features listed by the consumer.
+* `warning_flags` - Sets compiler flags for the features that are currently enabled.
 
 ### Using WORKSPACE file
 The same approuch needs to be done when configuring toolchain over WORKSPACE file:
@@ -64,11 +67,11 @@ gcc_toolchain(
     gcc_repo = "gcc_toolchain_gcc",
     extra_features = [
         "minimal_warnings",
-        "treat_warnings_as_errors",
+        "-treat_warnings_as_errors",
     ],
     warning_flags = {
-        "minimal_warnings": ["-Wall", "-Wno-error=deprecated-declarations"],
-        "strict_warnings": ["-Wextra", "-Wpedantic"],
+        "minimal_warnings": ["-Wno-error=deprecated-declarations"],
+        "strict_warnings": ["-Wno-bool-compare"],
         "treat_warnings_as_errors": ["-Werror"],
     },
 )
