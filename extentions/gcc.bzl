@@ -101,10 +101,18 @@ def _gcc_impl(mctx):
                 "sha256": tag.sha256,
             }
 
-            for tag in mod.tags.extra_features:
-                for feature in tag.features:
-                    if feature not in features:
-                        features.append(feature)
+        for tag in mod.tags.extra_features:
+            for feature in tag.features:
+                f = feature.strip()
+                if not f:
+                    continue
+                if f.startswith("-"):
+                    remove_feature = f[1:].strip()
+                    if remove_feature in features:
+                        features.remove(remove_feature)
+                else:
+                    if f not in features:
+                        features.append(f)
 
         for tag in mod.tags.warning_flags:
             for flag in tag.minimal_warnings:
