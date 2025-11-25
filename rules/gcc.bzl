@@ -47,6 +47,7 @@ def _impl(rctx):
     )
     minimal_warnings = "[]"
     strict_warnings = "[]"
+    additional_warnings = "[]"
     treat_warnings_as_errors = "[]"
     third_party_warnings = "[]"
 
@@ -55,6 +56,8 @@ def _impl(rctx):
             minimal_warnings = _get_string_warnings(rctx.attr.warning_flags[key])
         elif key == "strict_warnings":
             strict_warnings = _get_string_warnings(rctx.attr.warning_flags[key])
+        elif key == "additional_warnings":
+            additional_warnings = _get_string_warnings(rctx.attr.warning_flags[key])
         elif key == "treat_warnings_as_errors":
             treat_warnings_as_errors = _get_string_warnings(rctx.attr.warning_flags[key])
         elif key == "third_party_warnings":
@@ -69,6 +72,8 @@ def _impl(rctx):
             "%{minimal_warnings_flags}": minimal_warnings,
             "%{minimal_warnings_switch}": "True" if "minimal_warnings" in rctx.attr.extra_features else "False",
             "%{strict_warnings_flags}": strict_warnings,
+            "%{additional_warnings_flags}": additional_warnings,
+            "%{additional_warnings_switch}": "True" if "additional_warnings" in rctx.attr.extra_features else "False",
             "%{treat_warnings_as_errors_flags}": treat_warnings_as_errors,
             "%{treat_warnings_as_errors_switch}": "True" if "treat_warnings_as_errors" in rctx.attr.extra_features else "False",
             "%{third_party_warnings_flags}": third_party_warnings,

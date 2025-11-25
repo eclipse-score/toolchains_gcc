@@ -30,15 +30,11 @@ gcc.toolchain(
     strip_prefix = "x86_64-unknown-linux-gnu",
 )
 gcc.extra_features(
-    features = [
-        "minimal_warnings",
-        "-treat_warnings_as_errors",
-    ],
-) 
+    features = ["additional_warnings"],
+)
+
 gcc.warning_flags(
-    minimal_warnings = ["-Wno-error=deprecated-declarations", "-Wno-unused-variable"],
-    strict_warnings = ["-Wno-bool-compare"],
-    treat_warnings_as_errors = ["-Werror"],
+    additional_warnings = ["-Wno-error=conversion"],
 )
 use_repo(gcc, "gcc_toolchain", "gcc_toolchain_gcc")
 register_toolchains("@gcc_toolchain//:host_gcc_12")
