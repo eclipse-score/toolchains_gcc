@@ -76,7 +76,7 @@ gcc_toolchain(
     name = "gcc_toolchain",
     gcc_repo = "gcc_toolchain_gcc",
     extra_features = [
-        "strict_warnings",
+        "-strict_warnings",
         "additional_warnings",
     ],
     warning_flags = {

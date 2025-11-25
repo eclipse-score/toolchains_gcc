@@ -27,12 +27,10 @@ gcc_toolchain(
     name = "gcc_toolchain",
     gcc_repo = "gcc_toolchain_gcc",
     extra_features = [
-        "minimal_warnings",
-        "treat_warnings_as_errors",
+        "-strict_warnings",
+        "additional_warnings",
     ],
     warning_flags = {
-        "minimal_warnings": ["-Wno-error=deprecated-declarations"],
-        "strict_warnings": ["-Wno-bool-compare"],
-        "treat_warnings_as_errors": ["-Werror"],
+        "additional_warnings": ["-Wno-bool-compare"],
     },
 )

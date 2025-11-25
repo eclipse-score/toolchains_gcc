@@ -30,7 +30,7 @@ gcc.toolchain(
     strip_prefix = "x86_64-unknown-linux-gnu",
 )
 gcc.extra_features(
-    features = ["additional_warnings"],
+    features = ["-strict_warnings","additional_warnings"],
 )
 
 gcc.warning_flags(

@@ -72,6 +72,7 @@ def _impl(rctx):
             "%{minimal_warnings_flags}": minimal_warnings,
             "%{minimal_warnings_switch}": "True" if "minimal_warnings" in rctx.attr.extra_features else "False",
             "%{strict_warnings_flags}": strict_warnings,
+            "%{strict_warnings_switch}": "True" if "strict_warnings" in rctx.attr.extra_features else "False",
             "%{additional_warnings_flags}": additional_warnings,
             "%{additional_warnings_switch}": "True" if "additional_warnings" in rctx.attr.extra_features else "False",
             "%{treat_warnings_as_errors_flags}": treat_warnings_as_errors,

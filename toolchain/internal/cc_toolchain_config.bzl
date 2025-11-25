@@ -249,7 +249,7 @@ def _impl(ctx):
     strict_warnings_flags = %{strict_warnings_flags}
     strict_warnings_feature = feature(
         name = "strict_warnings",
-        implies = ["minimal_warnings"],
+        enabled = %{strict_warnings_switch},
         flag_sets = [
             flag_set(
                 actions = all_compile_actions,
