@@ -136,7 +136,7 @@ gcc = module_extension(
         "warning_flags": tag_class(
             attrs = {
                 "additional_warnings": attr.string_list(
-                    doc = "List of additional warning flags. Patterns: '-W<warning-name>', '-Werror', '-Wno-error=<warning-name>'. Cannot use '-Wno-' to disable warnings from DEFAULT_MINIMAL_WARNINGS.",
+                    doc = "List of additional warning flags. Patterns: '-W<warning-name>', '-Wno-error=<warning-name>'. Cannot use '-Wno-' to disable warnings from DEFAULT_MINIMAL_WARNINGS.",
                     default = [],
                 ),
             },
