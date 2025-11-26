@@ -1,0 +1,23 @@
+module(
+    name = "coverage_test",
+    version = "0.1.0",
+    compatibility_level = 0,
+)
+
+# bazel cc rules
+bazel_dep(name = "rules_cc", version = "0.1.1")
+
+#score gcc toolchain
+bazel_dep(name = "score_toolchains_gcc", version = "0.5", dev_dependency = False)
+
+gcc = use_extension("@score_toolchains_gcc//extentions:gcc.bzl", "gcc", dev_dependency = False)
+gcc.toolchain(
+    sha256 = "8fa85c2a93a6bef1cf866fa658495a2416dfeec692e4246063b791abf18da083",
+    strip_prefix = "x86_64-unknown-linux-gnu",
+    url = "https://github.com/eclipse-score/toolchains_gcc_packages/releases/download/v0.0.3/x86_64-unknown-linux-gnu_gcc12.tar.gz",
+)
+use_repo(gcc, "gcc_toolchain", "gcc_toolchain_gcc")
+
+register_toolchains("@gcc_toolchain//:all")
+
+bazel_dep(name = "googletest", version = "1.17.0.bcr.1", dev_dependency = True)
