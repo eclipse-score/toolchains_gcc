@@ -13,7 +13,7 @@
 
 module(
     name = "score_toolchains_gcc",
-    version = "0.5",
+    version = "0.0.7",
     compatibility_level = 0,
 )
 
