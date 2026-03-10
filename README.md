@@ -1,3 +1,7 @@
+> [!WARNING]
+> **Deprecated:** This repository should not be used anymore.
+> Starting with `v0.6`, use `https://github.com/eclipse-score/bazel_cpp_toolchains` instead.
+
 # Using the S-CORE Host GCC C++ Toolchains
 
 This guide explains how to use the GCC C++ Toolchain provided in S-CORE GCC Toolchain repository. The toolchain supports Linux-based GCC cross-compilation and is designed to integrate easily into Bazel-based C++ projects. 
