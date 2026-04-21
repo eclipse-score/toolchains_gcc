@@ -10,12 +10,19 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 # *******************************************************************************
-
-# TC Generator
-/tc_generator/.build
-/tc_generator/.config
-/tc_generator/build.log
-/tc_generator/output
-
-# Bazel
-bazel-*
+name: Bzlmod Lockfile Check
+permissions:
+  contents: read
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  merge_group:
+    types: [checks_requested]
+  push:
+    branches:
+      - main
+jobs:
+  bzlmod-lock:
+    uses: eclipse-score/cicd-workflows/.github/workflows/bzlmod-lock-check.yml@main
+    with:
+      working-directory: .
